@@ -11,7 +11,11 @@ class Blockchain(object):
         self.current_transactions = []
         self.new_block(previous_hash=1,proof=100)
 
-    def new_block(self):
+
+    def new_block(self, proof, previous_hash=None):
+        """ Creates new block and adds it to the exising chain """
+
+        # create python object that contains the info inside a block
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time.time(),
@@ -19,12 +23,14 @@ class Blockchain(object):
             previous_hash: previous_hash or self.hash(self.chain[-1])
         }
 
+        # set current transaction list to empty
         self.current_transactions = []
         self.chain.append(block)
 
         return block
 
-    def new_transaction(self):
+    def new_transaction(self,sender, receiver, amount):
+        """ create new transaction that will be sent to the next block """
         
         self.current_transactions.append(
             {
@@ -38,9 +44,12 @@ class Blockchain(object):
 
     @staticmethod
     def hash(block):
+        """ creates a SHA-256 block hash. Ensures that the dict is in order """
 
+        # convert block into a json object and then into bytes so it can be hashed
         block_string = json.dumps(block, sort_keys=True).encode()
 
+        # return encoded data in hexadecimat format
         return hashlib.sha256(block_string).hexdigest()
 
     @property
